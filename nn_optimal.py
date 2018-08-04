@@ -76,10 +76,10 @@ def train_rigged_model (search_params):
   accuracy = score
   return {"loss" : -accuracy, "status" : STATUS_OK, "model": m}
 
-def train_optimal_model (x_train, y_train, x_test, y_test, model_params):
+def train_optimal_model (x_train, y_train, x_test, y_test):
   from os.path import join
   import keras
-  from hyperopt import tpe
+  from hyperopt import tpe, fmin, hp
 
   print ("train_optimal_model")
 

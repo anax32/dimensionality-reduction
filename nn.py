@@ -1,3 +1,7 @@
+import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
+
 import numpy as np
 from os.path import exists
 
@@ -45,3 +49,17 @@ def get_reconstructions (model_type, x_train, x_test, count):
   Renc = m.predict(params["x_train"][:count,...])        # reconstruction
 
   return Renc
+
+
+if __name__ == "__main__":
+  import sys
+  from keras.datasets import mnist
+
+  (x_train, y_train), (x_test, y_test) = mnist.load_data ()
+
+#  model_types = ["dense", "cnn", "dense_rigged", "cnn_rigged"]
+#
+#  if sys.argv[1] in model_types:
+#    params = get_model_parameters (sys.argv[1], x_train, x_test)
+#    m = train_nn (params)
+  train_optimal_nn (x_train, x_train, x_test, x_test)
