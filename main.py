@@ -7,16 +7,6 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 # from:
 # https://stats.stackexchange.com/questions/190148/building-an-autoencoder-in-tensorflow-to-surpass-pca
 import pylab as plt
-import numpy as np
-import seaborn as sns; sns.set()
-
-import keras
-from keras.datasets import mnist
-from keras.models import Sequential, Model
-from keras.optimizers import Adam
-
-# config
-from os.path import exists
 
 # pca
 from pca import get_pca_encodings, get_pca_reconstructions
@@ -73,6 +63,8 @@ def plot_reconstructions (x_train, x_test):
 
 # execute
 if __name__ == "__main__":
+  from keras.datasets import mnist
+
   (x_train, y_train), (x_test, y_test) = mnist.load_data()
   print ("x_train : %s, %s" % (str (x_train.shape), str (x_train.dtype)))
   print ("x_test  : %s, %s" % (str (x_test.shape), str (x_test.dtype)))
