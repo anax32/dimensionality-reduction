@@ -18,7 +18,7 @@ from nn import (get_encodings as get_nn_encodings,
 
 # plot the data
 def plot_encodings (x_train, x_test):
-  Zenc = get_nn_encodings ("dense", x_train, x_test)
+  Zenc = get_nn_encodings ("dense_rigged", x_train, x_test)
   Zpca = get_pca_encodings (x_train)
 
   print ("plotting...")
