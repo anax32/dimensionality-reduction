@@ -7,6 +7,8 @@ from nn_models import get_model_parameters
 from nn_train import train as train_nn
 
 def get_encodings (model_type, x_train, x_test):
+  from keras.models import Model
+
   params = get_model_parameters (model_type, x_train, x_test)
 
   if exists (params["model_filename"]):
