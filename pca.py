@@ -5,9 +5,7 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 import numpy as np
-from os.path import exists
-
-pca_model_filename = "pca.npz"
+from os.path import exists, join
 
 # pca
 def get_pca (pca_model_filename, x_train):
@@ -24,7 +22,7 @@ def get_pca (pca_model_filename, x_train):
 
   return U, s, V
 
-def get_pca_encodings (x_train, x_test):
+def get_pca_encodings (pca_model_filename, x_train, x_test):
   pca_x_train = x_train.reshape (x_train.shape[0], x_train.shape[1]*x_train.shape[2])
   pca_x_test = x_test.reshape (x_test.shape[0], x_test.shape[1]*x_test.shape[2])
   mu = pca_x_train.mean(axis=0)
@@ -36,6 +34,8 @@ def get_pca_encodings (x_train, x_test):
   return Zpca
 
 def get_pca_reconstructions (x_train, x_test):
+  pca_model_filename = join ("data", "models", "pca.npz")
+
   pca_x_train = x_train.reshape (x_train.shape[0], x_train.shape[1]*x_train.shape[2])
   pca_x_test = x_test.reshape (x_test.shape[0], x_test.shape[1]*x_test.shape[2])
   mu = pca_x_train.mean(axis=0)
