@@ -10,13 +10,13 @@ import keras
 from keras.models import Model
 
 # config
-from os.path import exists
+from os.path import exists, join
 nn_model_filename = "nn_reg.h5"
 
 def dense (input_shape):
   from keras.layers import Input, Reshape, Dense
   from keras.regularizers import l2
-  from keras.constraints import max_norm
+  from keras.constraints import unit_norm
 
   dense_params = {
     "activation" : "elu"
@@ -28,9 +28,9 @@ def dense (input_shape):
   }
 
   input = x = Input (shape=input_shape)
-  x = Dense(512, kernel_constraint=max_norm (784*512), **dense_params) (x)
-  x = Dense(128, kernel_constraint=max_norm (512*128), **dense_params) (x)
-  x = Dense(2,   kernel_constraint=max_norm (128*2), **bottleneck_params) (x)
+  x = Dense(512, kernel_constraint=unit_norm (), **dense_params) (x)
+  x = Dense(128, kernel_constraint=unit_norm (), **dense_params) (x)
+  x = Dense(2,   kernel_constraint=unit_norm (), **bottleneck_params) (x)
   x = Dense(128, **dense_params) (x)
   x = Dense(512, **dense_params) (x)
   output = x = Dense(784,  activation='sigmoid') (x)
@@ -81,7 +81,7 @@ def train (params):
                   shuffle=True,
                   validation_data=(params["x_test"], params["x_test"]))
 
-  m.save (params["model_name"])
+  m.save (params["model_filename"])
 
   return m
 
@@ -92,10 +92,10 @@ def get_model_parameters (model_type, x_train, x_test):
     "batch_size" : 128,
     "epochs" : 50,
     "input_shape" : (x_train.shape[1]*x_train.shape[2], ),
-    "constructor_fn" : lambda : dense_ae ((x_train.shape[1]*x_train.shape[2],)),
+    "constructor_fn" : lambda : dense ((x_train.shape[1]*x_train.shape[2],)),
     "loss" : "mean_squared_error",
     "optimizer" : "adam",
-    "model_filename" : nn_model_filename
+    "model_filename" : join ("data", "models", "dense_constraint_unit_norm.h5")
   }
 
   cnn_params = {
@@ -104,10 +104,10 @@ def get_model_parameters (model_type, x_train, x_test):
     "batch_size" : 16,
     "epochs" : 5,
     "input_shape" : x_train.shape[1:],
-    "constructor_fn" : lambda : cnn_ae ((x_train.shape[1:])),
+    "constructor_fn" : lambda : cnn ((x_train.shape[1:])),
     "loss" : "mean_squared_error", # "binary_crossentropy"
     "optimizer" : "adam", # "adadelta", "sgd"
-    "model_filename" : nn_model_filename
+    "model_filename" : join ("data", "models", "cnn.h5")
   }
 
   if model_type == "dense":
