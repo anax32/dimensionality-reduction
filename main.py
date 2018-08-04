@@ -19,7 +19,7 @@ from nn import (get_encodings as get_nn_encodings,
 # plot the data
 def plot_encodings (x_train, x_test):
   Zenc = get_nn_encodings ("dense", x_train, x_test)
-  Zpca = get_pca_encodings ("pca", x_train, x_test)
+  Zpca = get_pca_encodings (x_train)
 
   print ("plotting...")
   plt.figure(figsize=(8,4))
@@ -44,14 +44,15 @@ def plot_encodings (x_train, x_test):
 
 # plot the reconstructions
 def plot_reconstructions (x_train, x_test):
-  Rpca = get_pca_reconstructions ("pca", x_train, x_test)
-  Renc = get_nn_reconstructions ("dense", x_train, x_test)
+  count = 10
+  Rpca = get_pca_reconstructions (x_train, count = count)
+  Renc = get_nn_reconstructions ("dense", x_train, x_test, count = count)
 
   plt.figure(figsize=(9,3))
   toPlot = (x_train, Rpca, Renc)
-  for i in range(10):
+  for i in range(count):
     for j in range(3):
-      ax = plt.subplot(3, 10, 10*j+i+1)
+      ax = plt.subplot(3, count, count*j+i+1)
       plt.imshow(toPlot[j][i,:].reshape(28,28),
                  interpolation="nearest",
                  vmin=0, vmax=1)
@@ -74,4 +75,4 @@ if __name__ == "__main__":
   x_test = x_test / 255.0
 
   plot_encodings (x_train, x_test)
-#  plot_reconstructions (x_train, x_test)
+  plot_reconstructions (x_train, x_test)

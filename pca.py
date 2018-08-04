@@ -28,7 +28,7 @@ def get_pca (pca_model_filename, x_train):
 
   return U, s, V
 
-def get_encodings (pca_model_filename, data):
+def get_encodings (data):
   """return the projection of data into the pca space
   """
   X = data.reshape (data.shape[0], np.prod (data.shape[1:]))
@@ -38,20 +38,17 @@ def get_encodings (pca_model_filename, data):
 
   return np.dot (X - mu, V.transpose ())
 
-def get_reconstructions (data, test_data = None):
+def get_reconstructions (data, count = 10):
   """return reconstructions of the data after projection into the
       pca sub-space
   """
-  X = data.reshape (data.shape[0], np.prod (data[1:]))
-
-  if test_data != None:
-    X_test = test_data.reshape (test_data.shape[0], np.prod (test_data[1:]))
+  X = data[:count,...].reshape (count, np.prod (data.shape[1:]))
 
   mu = X.mean (axis = 0)
 
   U, s, V = get_pca (CACHE_FILENAME, X)
 
-  Zpca = get_pca_encodings (X, X_test)
+  Zpca = get_encodings (X)
   Rpca = np.dot(Zpca[:,:2], V[:2,:]) + mu    # reconstruction
   err = np.sum ((X-Rpca)**2)/Rpca.shape[0]/Rpca.shape[1]
   print('PCA reconstruction error with 2 PCs: ' + str(round(err,3)));

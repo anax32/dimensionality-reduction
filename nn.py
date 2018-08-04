@@ -26,7 +26,7 @@ def get_encodings (model_type, x_train, x_test):
 
   return Zenc
 
-def get_reconstructions (model_type, x_train, x_test):
+def get_reconstructions (model_type, x_train, x_test, count):
   params = get_model_parameters (model_type, x_train, x_test)
 
   if exists (params["model_filename"]):
@@ -36,6 +36,6 @@ def get_reconstructions (model_type, x_train, x_test):
     m = train_nn (params)
 
   print ("reconstruction prediction...")
-  Renc = m.predict(params["x_train"])        # reconstruction
+  Renc = m.predict(params["x_train"][:count,...])        # reconstruction
 
   return Renc
