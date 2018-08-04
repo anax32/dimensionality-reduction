@@ -9,7 +9,8 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 import pylab as plt
 
 # pca
-from pca import get_pca_encodings, get_pca_reconstructions
+from pca import (get_encodings as get_pca_encodings,
+                 get_reconstructions as get_pca_reconstructions)
 
 # autoencoder
 from nn import (get_encodings as get_nn_encodings,
@@ -18,7 +19,7 @@ from nn import (get_encodings as get_nn_encodings,
 # plot the data
 def plot_encodings (x_train, x_test):
   Zenc = get_nn_encodings ("dense", x_train, x_test)
-  Zpca = get_pca_encodings (x_train, x_test)
+  Zpca = get_pca_encodings ("pca", x_train, x_test)
 
   print ("plotting...")
   plt.figure(figsize=(8,4))
@@ -43,7 +44,7 @@ def plot_encodings (x_train, x_test):
 
 # plot the reconstructions
 def plot_reconstructions (x_train, x_test):
-  Rpca = get_pca_reconstructions (x_train, x_test)
+  Rpca = get_pca_reconstructions ("pca", x_train, x_test)
   Renc = get_nn_reconstructions ("dense", x_train, x_test)
 
   plt.figure(figsize=(9,3))
