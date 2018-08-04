@@ -1,15 +1,10 @@
 import numpy as np
 from os.path import exists
 
-import keras
 from keras.models import load_model as keras_load_model
-from keras.models import Model
 
-# config
-from nn_models import (dense as dense_ae,
-                       cnn as cnn_ae,
-                       train as train_nn,
-                       get_model_parameters)
+from nn_models import get_model_parameters
+from nn_train import train as train_nn
 
 def get_encodings (model_type, x_train, x_test):
   params = get_model_parameters (model_type, x_train, x_test)
