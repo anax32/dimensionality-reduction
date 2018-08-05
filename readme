@@ -1,0 +1,28 @@
+Subspace projection with PCA and Neural Networks
+------------------------------------------------
+
+This project outlines a few methods for subspace project (dimensionality
+reduction) typically used in data processing (analytics, informatics, data
+science, etc.).
+
+The jumping off point was for a great answer to a question about 
+dimensionality reduction on stackoverflow:
+https://stats.stackexchange.com/questions/190148/building-an-autoencoder-in-tensorflow-to-surpass-pca
+by user 
+
+I've extended this by:
+  1) include a CNN architecture, and
+  2) using hyperopt for hyperparameter optimisation.
+
+GOAL
+----
+I would like to produce an improved separation of features in the subspace
+(wouldn't we all). This can be visually improved if we add kernel constraints
+to the neural networks. How can this be measured and be the objective function?
+
+TODO
+----
+
++ Improve hyperopt integration
++ select between PCA, NN, CNN
++ measure the spread of values in the subspace and compare on that.
