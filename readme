@@ -22,7 +22,16 @@ to the neural networks. How can this be measured and be the objective function?
 
 TODO
 ----
-
 + Improve hyperopt integration
 + select between PCA, NN, CNN
 + measure the spread of values in the subspace and compare on that.
+
+RELATED WORK
+------------
+Reducing the Dimensionality of Data with Neural Networks
+G. E. Hinton and R. R. Salakhutdinov, 2006
+https://www.cs.toronto.edu/~hinton/science.pdf
+
+NormFace: L_2 Hypersphere Embedding for Face Verification
+Feng Wang, Xiang Xiang, Jian Cheng, and Alan L. Yuille, 2017
+https://arxiv.org/pdf/1704.06369.pdf
