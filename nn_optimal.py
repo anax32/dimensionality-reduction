@@ -74,14 +74,24 @@ def train_rigged_model (search_params):
 
   score = m.evaluate (x_test, y_test, verbose = 0)
   accuracy = score
-  return {"loss" : -accuracy, "status" : STATUS_OK, "model": m}
+  print (history.history)
+
+  return {
+    "loss" : -accuracy,
+    "status" : STATUS_OK,
+    "model": m,
+    "search_params" : search_params,
+    "history" : str (history.history)
+  }
 
 def train_optimal_model (x_train, y_train, x_test, y_test):
   from os.path import join
   import keras
-  from hyperopt import tpe, fmin, hp
+  from hyperopt import tpe, fmin, hp, Trials
 
   print ("train_optimal_model")
+
+  trails = Trials ()
 
   best = fmin (
     fn = train_rigged_model,
@@ -106,9 +116,19 @@ def train_optimal_model (x_train, y_train, x_test, y_test):
       "epochs" : hp.choice ("@epochs", [10, 20, 50, 100]),
     },
     algo = tpe.suggest,
-    max_evals = 10
+    max_evals = 100,
+    trials = trails
   )
 
   print (best)
 
-  best_model.save (join ("data", "models", "optimal.h5"))
+  try:
+    with open (join ("data", "models", "optimal_trials.json"), "w") as f:
+      json.dump (trials, f)
+  except:
+    print ("ERR: Could not save trials")
+
+  try:
+    best.save (join ("data", "models", "optimal.h5"))
+  except:
+    print ("ERR: Could not save optimal model")

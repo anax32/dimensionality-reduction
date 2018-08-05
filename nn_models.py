@@ -11,9 +11,9 @@ from keras.models import Model
 
 # config
 from os.path import exists, join
-nn_model_filename = "nn_reg.h5"
 
 def dense (input_shape):
+  """build a model made of dense layers"""
   from keras.layers import Input, Reshape, Dense
   from keras.regularizers import l2
   from keras.constraints import unit_norm
@@ -36,7 +36,39 @@ def dense (input_shape):
   output = x = Dense(784,  activation='sigmoid') (x)
   return [input], [output]
 
+def rigged_dense (input_shape, search_params):
+  """build a model made of dense layers which takes
+     hypteropt search parameters.
+     search parameters are:
+       "activation": activation function
+       "kernel_constraint": kernel constraint function
+  """
+  from keras.layers import Input, Reshape, Dense
+  from keras.regularizers import l2
+  from keras.constraints import unit_norm
+
+  dense_params = {
+    "activation" : search_params["activation_fn"],
+    "kernel_constraint" : search_params["kernel_constraint"] or None
+  }
+
+  bottleneck_params = {
+    "name" : "bottleneck",
+    "activation" : "linear"
+  }
+
+  input = x = Input (shape=input_shape)
+  x = Dense(512, **dense_params) (x)
+  x = Dense(128, **dense_params) (x)
+  x = Dense(2,   **bottleneck_params) (x)
+  x = Dense(128, **dense_params) (x)
+  x = Dense(512, **dense_params) (x)
+  output = x = Dense(784,  activation='sigmoid') (x)
+  return [input], [output]
+
 def cnn (input_shape):
+  """build a convolutional neural net based autoencoder
+  """
   from keras.layers import Input, Conv2D, Conv2DTranspose, ZeroPadding2D
   from keras.regularizers import l2
   from keras.constraints import max_norm
@@ -65,27 +97,12 @@ def cnn (input_shape):
   output = x = Conv2D (1, (1,1), activation="sigmoid") (x)
   return [input], [output]
 
-def train (params):
-  inputs, outputs = params["constructor_fn"] ()
-
-  m = Model (inputs=inputs, outputs=outputs)
-
-  print (m.summary ())
-
-  m.compile(loss=params["loss"], optimizer = params["optimizer"])
-
-  history = m.fit(params["x_train"], params["x_train"],
-                  batch_size=params["batch_size"],
-                  epochs=params["epochs"],
-                  verbose=1,
-                  shuffle=True,
-                  validation_data=(params["x_test"], params["x_test"]))
-
-  m.save (params["model_filename"])
-
-  return m
-
 def get_model_parameters (model_type, x_train, x_test):
+  """build a dict of model hyperparameters for a requested
+     model_type.
+  """
+  from hyperopt import hp
+
   dense_params = {
     "x_train" : x_train.reshape (x_train.shape[0], x_train.shape[1]*x_train.shape[2]),
     "x_test" : x_test.reshape (x_test.shape[0], x_test.shape[1]*x_test.shape[2]),
@@ -96,6 +113,20 @@ def get_model_parameters (model_type, x_train, x_test):
     "loss" : "mean_squared_error",
     "optimizer" : "adam",
     "model_filename" : join ("data", "models", "dense_constraint_unit_norm.h5")
+  }
+
+  rigged_dense_params = {
+    "rigged" : True,
+
+    "x_train" : x_train.reshape (x_train.shape[0], np.prod (x_train.shape[1:])),
+    "x_test" : x_test.reshape (x_test.shape[0], np.prod (x_test.shape[1:])),
+    "constructor_fn" : lambda params: rigged_dense (np.prod (x_train.shape[1:], params)),
+    "model_filename" : join ("data", "models", "optimal_dense_constraint_unit_norm.h5"),
+
+    "batch_size" : hp.choice ("@batch_size", [16, 32, 64, 128, 256]),
+    "epochs" : hp.choice ("@epochs", [10, 20, 50, 100]),
+    "loss" : hp.choice ("@loss", ["mae", "mse", "binary_crossentropy"]),
+    "optimizer" : hp.choice ("@optimizer", ["adam", "sgd", "rmsprop"])
   }
 
   cnn_params = {
@@ -112,6 +143,8 @@ def get_model_parameters (model_type, x_train, x_test):
 
   if model_type == "dense":
     return dense_params
+  elif model_type == "dense_rigged":
+    return rigged_dense_params
   elif model_type == "cnn":
     return cnn_params
   else:
